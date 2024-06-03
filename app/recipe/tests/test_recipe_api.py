@@ -21,7 +21,7 @@ RECIPES_URL = reverse('recipe:recipe-list')
 
 def detail_url(recipe_id):
 	"""Create and return a recipe detail URL."""
-	return reverse('recipe:recipe-details', args=[recipe_id])
+	return reverse('recipe:recipe-detail', args=[recipe_id])
 
 def create_recipe(user, **params):
     """Create and return a sample recipe"""
@@ -61,7 +61,7 @@ class PrivateRecipeApiTests(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recipes(self):
-        """Test retreiving a list of recipes"""
+        """Test retrieving a list of recipes"""
         create_recipe(user=self.user)
         create_recipe(user=self.user)
 
@@ -88,40 +88,40 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
-def test_get_recipe_detail(self):
-	"""Test get recipe details"""
-	#creates the recipe and assign it to a user that we use for authentication
-	recipe = create_recipe(user=self.user)
+    def test_get_recipe_detail(self):
+        """Test get recipe details"""
+        #creates the recipe and assign it to a user that we use for authentication
+        recipe = create_recipe(user=self.user)
 
-	#we create the deatil ur; using the ID of that recipe
-	url = detail_url(recipe.id)
-	#we run a get to call the url
-	res = self.client.get(url)
+        #we create the deatil ur; using the ID of that recipe
+        url = detail_url(recipe.id)
+        #we run a get to call the url
+        res = self.client.get(url)
 
-	#pass recipe to the serializer
-	serializer = RecipeDetailSerializer(recipe)
-	#Check the result of the client is the same as the result of the serializer
-	self.assertEqual(res.data, serializer.data)
+        #pass recipe to the serializer
+        serializer = RecipeDetailSerializer(recipe)
+        #Check the result of the client is the same as the result of the serializer
+        self.assertEqual(res.data, serializer.data)
 
-def test_create_recipe(self):
-    """Test create a recipe."""
-    #define a payload
-    payload = {
-        'title': 'Sample recipe',
-        'time_minutes': 30,
-        'price': Decimal('5.99'),
-    }
-    #HTTP post to recipe url
-    res = self.client.post(RECIPES_URL, payload) #/api/recipes/recipe
+    def test_create_recipe(self):
+        """Test create a recipe."""
+        #define a payload
+        payload = {
+            'title': 'Sample recipe',
+            'time_minutes': 30,
+            'price': Decimal('5.99'),
+        }
+        #HTTP post to recipe url
+        res = self.client.post(RECIPES_URL, payload) #/api/recipes/recipe
 
-    #Check for 201 (success code when creating a new object)
-    self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-    #Request a specific id (id returned from the post response)
-    recipe = Recipe.objects.get(id=res.data['id'])
-    #Iterate through the payload and check
-    for k, v in payload.items():
-        #we're using the getattr to get the object matching the name of k rather then the value
-        self.assertEqual(getattr(recipe, k), v)
-    #Check the user that assigned to the API matches the user we're authenticated with
-    self.assertEqual(recipe.user, self.user)
+        #Check for 201 (success code when creating a new object)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        #Request a specific id (id returned from the post response)
+        recipe = Recipe.objects.get(id=res.data['id'])
+        #Iterate through the payload and check
+        for k, v in payload.items():
+            #we're using the getattr to get the object matching the name of k rather then the value
+            self.assertEqual(getattr(recipe, k), v)
+        #Check the user that assigned to the API matches the user we're authenticated with
+        self.assertEqual(recipe.user, self.user)
 
